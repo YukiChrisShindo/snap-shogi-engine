@@ -1,0 +1,9 @@
+このソースがリンクするやねうら王のバージョン
+
+リポジトリ: https://github.com/yaneurao/YaneuraOu
+commit    : 1308ab3803e0011979473296741e56a6981c46ba
+ビルド構成: YANEURAOU_ENGINE_MATERIAL / MATERIAL_LEVEL=1（駒得評価版）
+評価関数  : 同梱なし
+定跡      : 同梱なし（BookFile=no_book）
+
+build_ios.sh を実行すると、上記commitを自動でcloneしてビルドします。
