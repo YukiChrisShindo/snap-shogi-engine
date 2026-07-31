@@ -70,7 +70,7 @@ SOURCES=(
 
 CPPFLAGS="-std=c++17 -fno-exceptions -fno-rtti -fpermissive -O3 -ffast-math -DNDEBUG \
  -Wno-unused-parameter -D_LINUX -DUNICODE -DNO_EXCEPTIONS \
- -DMATERIAL_LEVEL=1 -DYANEURAOU_ENGINE_MATERIAL -DTARGET_CPU=\"iOS\" \
+ -DMATERIAL_LEVEL=4 -DYANEURAOU_ENGINE_MATERIAL -DTARGET_CPU=\"iOS\" \
  $ARCH_FLAGS -Dmain=yaneuraou_main \
  -target $TARGET -isysroot $SYSROOT"
 
