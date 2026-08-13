@@ -10,7 +10,7 @@ GPLv3に基づき、このディレクトリの内容を公開しています。
 | エンジン | [やねうら王（YaneuraOu）](https://github.com/yaneurao/YaneuraOu) — © yaneurao |
 | ライセンス | **GPLv3**（やねうら王はStockfish由来のため） |
 | 参照commit | `1308ab3803e0011979473296741e56a6981c46ba`（2026-07-10） |
-| ビルド構成 | `YANEURAOU_ENGINE_MATERIAL` / `MATERIAL_LEVEL=1`（**駒得評価版**） |
+| ビルド構成 | `YANEURAOU_ENGINE_MATERIAL` / `MATERIAL_LEVEL=4`（**駒得＋利き評価版**） |
 | 評価関数 | **同梱していません。** 水匠等のNNUE評価関数ファイルは使用していません |
 | 定跡 | **同梱していません**（`BookFile=no_book` で無効化） |
 
