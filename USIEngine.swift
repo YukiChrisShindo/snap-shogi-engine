@@ -94,8 +94,16 @@ final class USIEngine: @unchecked Sendable {
         send("setoption name USI_Hash value 16")
         send("setoption name Threads value 2")
         send("setoption name BookFile value no_book")
+        // NNUE評価関数（水匠5）はバンドル直下の nn.bin を読む
+        // （XcodeGenがApp/Resources/Eval/nn.binをバンドル直下に配置する）。
+        // FV_SCALE=24 は水匠5の推奨値（配布ページ記載）
+        if let evalDir = Bundle.main.resourcePath {
+            send("setoption name EvalDir value \(evalDir)")
+            send("setoption name FV_SCALE value 24")
+        }
+        // isreadyで評価関数ファイル（約61MB）の読み込みが走るため、タイムアウトは長めに
         send("isready")
-        _ = try await waitFor(prefix: "readyok", timeout: 10)
+        _ = try await waitFor(prefix: "readyok", timeout: 30)
 
         lock.lock()
         prepared = true

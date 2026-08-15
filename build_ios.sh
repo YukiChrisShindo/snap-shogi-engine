@@ -52,7 +52,8 @@ SRC=YaneuraOu/source
 OBJ=build/obj-$MODE
 mkdir -p "$OBJ" build
 
-# Makefile の YANEURAOU_ENGINE_MATERIAL 構成と同じソース一覧
+# Makefile の YANEURAOU_ENGINE_NNUE（標準NNUE型 halfKP256）構成と同じソース一覧。
+# 評価関数は水匠5（App/Resources/Eval/nn.bin。fetch_suisho5.sh で取得）
 SOURCES=(
     main.cpp types.cpp bitboard.cpp misc.cpp movegen.cpp position.cpp
     usi.cpp usioption.cpp thread.cpp tt.cpp movepick.cpp timeman.cpp
@@ -64,15 +65,35 @@ SOURCES=(
     mate/mate1ply_with_effect.cpp mate/mate_solver.cpp
     eval/evaluate_bona_piece.cpp eval/evaluate.cpp eval/evaluate_io.cpp
     eval/evaluate_mir_inv_tools.cpp eval/material/evaluate_material.cpp
+    eval/nnue/evaluate_nnue.cpp eval/nnue/nnue_test_command.cpp
+    eval/nnue/features/k.cpp eval/nnue/features/p.cpp eval/nnue/features/a2.cpp
+    eval/nnue/features/half_kp.cpp eval/nnue/features/half_ka1.cpp
+    eval/nnue/features/half_ka_hm1.cpp eval/nnue/features/half_ka2.cpp
+    eval/nnue/features/half_ka_hm2.cpp eval/nnue/features/half_kp_vm.cpp
+    eval/nnue/features/half_relative_kp.cpp eval/nnue/features/half_kpe9.cpp
+    eval/nnue/features/pe9.cpp
     testcmd/unit_test.cpp testcmd/mate_test_cmd.cpp testcmd/normal_test_cmd.cpp
     engine/yaneuraou-engine/yaneuraou-search.cpp
 )
 
+# 2026-08-15: MATERIAL_LEVEL=4 から標準NNUE型（水匠5）へ変更。
+# 同じ1秒思考での棋力を桁違いに上げるため（経緯は docs/エンジン棋力の検討.md）
 CPPFLAGS="-std=c++17 -fno-exceptions -fno-rtti -fpermissive -O3 -ffast-math -DNDEBUG \
  -Wno-unused-parameter -D_LINUX -DUNICODE -DNO_EXCEPTIONS \
- -DMATERIAL_LEVEL=4 -DYANEURAOU_ENGINE_MATERIAL -DTARGET_CPU=\"iOS\" \
+ -DYANEURAOU_ENGINE_NNUE -DTARGET_CPU=\"iOS\" \
  $ARCH_FLAGS -Dmain=yaneuraou_main \
  -target $TARGET -isysroot $SYSROOT"
+
+# コンパイルフラグが前回と違ったら中間ファイルを全部捨てる。
+# 差分ビルドはソースの新旧しか見ないため、フラグ変更（例: MATERIAL→NNUE）が
+# 反映されず新旧混在の壊れたライブラリができる事故が実際にあった
+FLAGS_FILE="$OBJ/.cppflags"
+if [ ! -f "$FLAGS_FILE" ] || [ "$(cat "$FLAGS_FILE")" != "$CPPFLAGS" ]; then
+    echo "== フラグが変わったので $OBJ をクリーンする =="
+    rm -rf "$OBJ"
+    mkdir -p "$OBJ"
+    printf '%s' "$CPPFLAGS" > "$FLAGS_FILE"
+fi
 
 echo "== コンパイル ($MODE / $TARGET) =="
 PIDS=()

@@ -2,8 +2,9 @@
 
 リポジトリ: https://github.com/yaneurao/YaneuraOu
 commit    : 1308ab3803e0011979473296741e56a6981c46ba
-ビルド構成: YANEURAOU_ENGINE_MATERIAL / MATERIAL_LEVEL=4（駒得＋利き評価）
-評価関数  : 同梱なし
+ビルド構成: YANEURAOU_ENGINE_NNUE（標準NNUE型 halfKP256）
+評価関数  : 水匠5（© たややん, GPLv3。公式リリース
+            https://github.com/yaneurao/YaneuraOu/releases/tag/suisho5 から取得）
 定跡      : 同梱なし（BookFile=no_book）
 
 build_ios.sh を実行すると、上記commitを自動でcloneしてビルドします。

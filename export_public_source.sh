@@ -34,6 +34,7 @@ fi
 # 公開対象ファイルを反映（.git以外を入れ替える）
 find "$OUT" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 cp "$ENGINE_DIR/build_ios.sh"   "$OUT/"
+cp "$ENGINE_DIR/fetch_suisho5.sh" "$OUT/"
 cp "$ENGINE_DIR/usi_bridge.cpp" "$OUT/"
 cp "$ENGINE_DIR/README.md"      "$OUT/"
 cp "$ENGINE_DIR/LICENSE"        "$OUT/"
@@ -42,14 +43,14 @@ cp "$ENGINE_DIR/export_public_source.sh" "$OUT/"
 
 # 参照しているやねうら王のcommitを控える
 COMMIT=$(grep -m1 '^YANEURAOU_COMMIT=' "$ENGINE_DIR/build_ios.sh" | cut -d'"' -f2)
-LEVEL=$(grep -oE 'MATERIAL_LEVEL=[0-9]+' "$ENGINE_DIR/build_ios.sh" | head -1 | cut -d= -f2)
 cat > "$OUT/YANEURAOU_VERSION.txt" <<EOF
 このソースがリンクするやねうら王のバージョン
 
 リポジトリ: https://github.com/yaneurao/YaneuraOu
 commit    : $COMMIT
-ビルド構成: YANEURAOU_ENGINE_MATERIAL / MATERIAL_LEVEL=$LEVEL（駒得＋利き評価）
-評価関数  : 同梱なし
+ビルド構成: YANEURAOU_ENGINE_NNUE（標準NNUE型 halfKP256）
+評価関数  : 水匠5（© たややん, GPLv3。公式リリース
+            https://github.com/yaneurao/YaneuraOu/releases/tag/suisho5 から取得）
 定跡      : 同梱なし（BookFile=no_book）
 
 build_ios.sh を実行すると、上記commitを自動でcloneしてビルドします。
