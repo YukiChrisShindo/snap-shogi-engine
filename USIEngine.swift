@@ -90,8 +90,9 @@ final class USIEngine: @unchecked Sendable {
 
         send("usi")
         _ = try await waitFor(prefix: "usiok", timeout: 10)
-        // メモリはスマホ向けに控えめ、定跡ファイルは同梱していないので無効化
-        send("setoption name USI_Hash value 16")
+        // 置換表64MB: 16MBは駒得評価時代の設定で、NNUEの探索には手狭
+        // （読み直しが増えて同じ思考時間でも浅くなる）。定跡ファイルは無効化
+        send("setoption name USI_Hash value 64")
         send("setoption name Threads value 2")
         send("setoption name BookFile value no_book")
         // NNUE評価関数（水匠5）はバンドル直下の nn.bin を読む

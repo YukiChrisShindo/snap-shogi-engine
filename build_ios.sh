@@ -36,7 +36,11 @@ fi
 if [ "$MODE" = "device" ]; then
     SDK=iphoneos
     TARGET=arm64-apple-ios17.0
-    ARCH_FLAGS="-DIS_64BIT -DUSE_NEON=8"
+    # USE_NEONに =8 を付けない（本家MakefileのAPPLEM1と同じ保守的なNEON経路）。
+    # =8 の高速経路はiOS向けclangビルドで誤った評価値を出した:
+    # 後手勝勢(-1200)の検証局面を実機だけ +0 と評価（simulator/x86は正常）。
+    # 経緯は docs/エンジン棋力の検討.md の「NNUE移行後の実機評価値バグ」を参照
+    ARCH_FLAGS="-DIS_64BIT -DUSE_NEON"
     OUT=build/libyaneuraou-ios-arm64.a
 else
     SDK=iphonesimulator
