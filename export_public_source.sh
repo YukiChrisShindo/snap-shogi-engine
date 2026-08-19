@@ -63,8 +63,9 @@ if git -C "$OUT" diff --quiet && [ -z "$(git -C "$OUT" status --porcelain)" ]; t
 fi
 
 git -C "$OUT" add -A
-git -C "$OUT" -c user.name="Yuki Shindo" -c user.email="yuki.chris.shindo@gmail.com" \
-    commit -q -m "エンジン統合部を本体リポジトリと同期"
+# コミット作者はローカルのgit設定をそのまま使う。
+# このスクリプト自体が公開対象なので、メールアドレスを本文に埋め込まない
+git -C "$OUT" commit -q -m "エンジン統合部を本体リポジトリと同期"
 echo "コミット済み: $(git -C "$OUT" log --oneline -1)"
 
 if [ "$DO_PUSH" = "--push" ]; then
