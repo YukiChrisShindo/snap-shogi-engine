@@ -1,7 +1,7 @@
 #!/bin/bash
-# やねうら王（駒得評価版）をiOS向け静的ライブラリとしてビルドする。
+# やねうら王（標準NNUE型）をiOS向け静的ライブラリとしてビルドする。
 # 使い方: ./build_ios.sh [simulator|device]
-#   simulator: iOSシミュレータ用（このMacはIntelなので x86_64）
+#   simulator: iOSシミュレータ用（ホストのCPUに合わせる: Intel Mac は x86_64、Apple Silicon は arm64）
 #   device   : 実機用（arm64）
 #
 # ライセンス: このスクリプトは SnapShogi のエンジン統合部の一部で、GPLv3で提供される。
@@ -44,9 +44,16 @@ if [ "$MODE" = "device" ]; then
     OUT=build/libyaneuraou-ios-arm64.a
 else
     SDK=iphonesimulator
-    TARGET=x86_64-apple-ios17.0-simulator
-    ARCH_FLAGS="-DIS_64BIT -DUSE_SSE42 -msse4.2"
-    OUT=build/libyaneuraou-sim-x86_64.a
+    HOST_ARCH=$(uname -m)
+    if [ "$HOST_ARCH" = "arm64" ]; then
+        TARGET=arm64-apple-ios17.0-simulator
+        ARCH_FLAGS="-DIS_64BIT -DUSE_NEON"
+    else
+        TARGET=x86_64-apple-ios17.0-simulator
+        ARCH_FLAGS="-DIS_64BIT -DUSE_SSE42 -msse4.2"
+    fi
+    # 出力名はCPUに依らず固定（project.yml がこの名前でリンクする）
+    OUT=build/libyaneuraou-sim.a
 fi
 
 SYSROOT=$(xcrun -sdk $SDK --show-sdk-path)
@@ -54,6 +61,8 @@ CXX="xcrun -sdk $SDK clang++"
 
 SRC=YaneuraOu/source
 OBJ=build/obj-$MODE
+# 旧名（libyaneuraou-sim-x86_64.a）は使われなくなったので消しておく
+rm -f build/libyaneuraou-sim-x86_64.a
 mkdir -p "$OBJ" build
 
 # Makefile の YANEURAOU_ENGINE_NNUE（標準NNUE型 halfKP256）構成と同じソース一覧。

@@ -53,19 +53,19 @@ USIテキストのみです。
 ## ビルド方法
 
 ```bash
-./build_ios.sh simulator   # iOSシミュレータ用（x86_64）
+./build_ios.sh simulator   # iOSシミュレータ用（ホストCPUに合わせて x86_64 / arm64）
 ./build_ios.sh device      # 実機用（arm64）
 ```
 
 やねうら王のソースが未取得なら自動でcloneし、上記の固定commitへcheckoutします。
-成果物は `build/libyaneuraou-sim-x86_64.a` または `build/libyaneuraou-ios-arm64.a`。
+成果物は `build/libyaneuraou-sim.a`（ホストのCPUに合わせて x86_64 か arm64）または `build/libyaneuraou-ios-arm64.a`。
 
 アプリへのリンク時は **`-force_load` が必須**です。やねうら王のエンジンは静的
 イニシャライザで自己登録するため、通常の `-l` 指定では実行時に
 「Error: no engine entry point.」で停止します。
 
 ```
--lc++ -Wl,-force_load,/path/to/libyaneuraou-sim-x86_64.a
+-lc++ -Wl,-force_load,/path/to/libyaneuraou-sim.a
 ```
 
 ## ライセンス
