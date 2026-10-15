@@ -34,7 +34,7 @@ fi
 # 公開対象ファイルを反映（.git以外を入れ替える）
 find "$OUT" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 cp "$ENGINE_DIR/build_ios.sh"   "$OUT/"
-cp "$ENGINE_DIR/fetch_suisho5.sh" "$OUT/"
+cp "$ENGINE_DIR/fetch_tsuyou11mini.sh" "$OUT/"
 cp "$ENGINE_DIR/usi_bridge.cpp" "$OUT/"
 cp "$ENGINE_DIR/README.md"      "$OUT/"
 cp "$ENGINE_DIR/LICENSE"        "$OUT/"
@@ -48,9 +48,9 @@ cat > "$OUT/YANEURAOU_VERSION.txt" <<EOF
 
 リポジトリ: https://github.com/yaneurao/YaneuraOu
 commit    : $COMMIT
-ビルド構成: YANEURAOU_ENGINE_NNUE（標準NNUE型 halfKP256）
-評価関数  : 水匠5（© たややん, GPLv3。公式リリース
-            https://github.com/yaneurao/YaneuraOu/releases/tag/suisho5 から取得）
+ビルド構成: SFNN_ka2_4096_8_64_progress8（NNUE系。arch ヘッダは本家の nnue_arch_gen.py で生成）
+評価関数  : つようら王11mini（© やねうら王プロジェクト, MIT License。配布元
+            https://yaneurao.fanbox.cc/posts/12761272 から取得）
 定跡      : 同梱なし（BookFile=no_book）
 
 build_ios.sh を実行すると、上記commitを自動でcloneしてビルドします。

@@ -1,5 +1,5 @@
 #!/bin/bash
-# やねうら王（標準NNUE型）をiOS向け静的ライブラリとしてビルドする。
+# やねうら王（SFNN型NNUE）をiOS向け静的ライブラリとしてビルドする。
 # 使い方: ./build_ios.sh [simulator|device]
 #   simulator: iOSシミュレータ用（ホストのCPUに合わせる: Intel Mac は x86_64、Apple Silicon は arm64）
 #   device   : 実機用（arm64）
@@ -14,7 +14,8 @@ MODE="${1:-simulator}"
 # 参照するやねうら王のcommit。
 # GPLv3の「対応するソースコード」は配布バイナリを再現できる必要があるため、
 # HEADではなくcommitを固定する。更新する際はこの値だけを変更すること。
-YANEURAOU_COMMIT="1308ab3803e0011979473296741e56a6981c46ba"
+# 2026-10-15: つようら王11mini（SFNN_ka2…progress8）に対応した 9/14 の master へ更新
+YANEURAOU_COMMIT="c1b80eaa09fe13d5f12b1599d1ae4d53c224de30"
 YANEURAOU_REPO="https://github.com/yaneurao/YaneuraOu.git"
 
 # ソース未取得ならクローン（リポジトリにはやねうら王本体を含めない）
@@ -31,6 +32,19 @@ if [ "$CURRENT_COMMIT" != "$YANEURAOU_COMMIT" ]; then
     git -C YaneuraOu checkout --quiet "$YANEURAOU_COMMIT"
     # ソースが変わったので中間生成物を捨てる
     rm -rf build/obj-simulator build/obj-device
+fi
+
+# 評価関数のアーキテクチャ。nn.bin の形と一致していないと読み込みに失敗する。
+# つようら王11mini の配布物（tag.json）に書かれている arch 名をそのまま使う
+NNUE_ARCH="SFNN_ka2_4096_8_64_progress8"
+
+# SFNN型は arch ごとのヘッダを本家同梱のスクリプトで生成する（本家 Makefile と同じ手順）。
+# 生成物は YaneuraOu/source 内に置かれ、固定commitと arch 名から毎回同じものができる
+ARCH_HEADER="YaneuraOu/source/eval/nnue/architectures/$NNUE_ARCH.h"
+if [ ! -f "$ARCH_HEADER" ]; then
+    echo "== アーキテクチャヘッダを生成: $NNUE_ARCH =="
+    (cd YaneuraOu/source && python3 eval/nnue/architectures/nnue_arch_gen.py \
+        "$NNUE_ARCH" eval/nnue/architectures)
 fi
 
 if [ "$MODE" = "device" ]; then
@@ -65,8 +79,9 @@ OBJ=build/obj-$MODE
 rm -f build/libyaneuraou-sim-x86_64.a
 mkdir -p "$OBJ" build
 
-# Makefile の YANEURAOU_ENGINE_NNUE（標準NNUE型 halfKP256）構成と同じソース一覧。
-# 評価関数は水匠5（App/Resources/Eval/nn.bin。fetch_suisho5.sh で取得）
+# Makefile の YANEURAOU_ENGINE_SFNN_*（NNUE系）構成と同じソース一覧。
+# 評価関数はつようら王11mini（App/Resources/Eval/nn.bin と progress.bin。
+# fetch_tsuyou11mini.sh で取得）
 SOURCES=(
     main.cpp types.cpp bitboard.cpp misc.cpp movegen.cpp position.cpp
     usi.cpp usioption.cpp thread.cpp tt.cpp movepick.cpp timeman.cpp
@@ -91,9 +106,13 @@ SOURCES=(
 
 # 2026-08-15: MATERIAL_LEVEL=4 から標準NNUE型（水匠5）へ変更。
 # 同じ1秒思考での棋力を桁違いに上げるため（経緯は docs/エンジン棋力の検討.md）
+# 2026-10-15: 水匠5（halfKP256）からつようら王11mini（SFNN）へ変更。
+# SFNN用のシンボルは本家 Makefile が SFNN_* の arch に付けるものと同じ
 CPPFLAGS="-std=c++17 -fno-exceptions -fno-rtti -fpermissive -O3 -ffast-math -DNDEBUG \
  -Wno-unused-parameter -D_LINUX -DUNICODE -DNO_EXCEPTIONS \
- -DYANEURAOU_ENGINE_NNUE -DTARGET_CPU=\"iOS\" \
+ -DYANEURAOU_ENGINE_NNUE -DYANEURAOU_ENGINE_$NNUE_ARCH -DSFNNwoPSQT \
+ -DNNUE_ARCHITECTURE_HEADER=\"architectures/$NNUE_ARCH.h\" \
+ -DTARGET_CPU=\"iOS\" \
  $ARCH_FLAGS -Dmain=yaneuraou_main \
  -target $TARGET -isysroot $SYSROOT"
 
