@@ -187,7 +187,10 @@ actor USIEngine {
 
         send("setoption name MultiPV value \(multiPV)")
         infoLines.removeAll()
-        send("position sfen \(sfen)")
+        // 受け取った文字列そのものではなく、検証済みの Position から作り直した SFEN を渡す。
+        // 検証した局面とエンジンが読む局面を必ず一致させ、改行などで余計な USI コマンドが
+        // 紛れ込む余地もなくすため
+        send("position sfen \(SFEN.generate(from: position))")
         send("go movetime \(movetimeMs)")
 
         let timeout = TimeInterval(movetimeMs) / 1000 + 10
